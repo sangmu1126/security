@@ -6,6 +6,7 @@
 
 Team Bravo 플랫폼 연동을 위해 개인 환경에서 검증하는 공통 Python 보안 패키지와 선택형 보안 판정 서비스다. 보호 수준 비교, 근거 검증, 보안 보류와 제한된 대응 계획을 제공한다. **보안 판정은 사용자 승인이나 운영 실행 권한을 부여하지 않는다.**
 
+[전체 문서 목차](docs/README.md)에서 설계·API 계약·과거 검증·운영 인수를 구분한다.
 두 보안 문서 적용 결과와 플랫폼 연결 순서는 [인계 현황](docs/platform-handoff-status.md)에서 확인한다.
 T14·T33의 맥 인수 준비와 오프라인 20개 통제 요약은 [인수 실행 안내](docs/mac-t14-t33-intake.md)를 따른다.
 
@@ -32,6 +33,18 @@ T14·T33의 맥 인수 준비와 오프라인 20개 통제 요약은 [인수 실
 
 Sova의 실행 원장·승인 서비스·작업 큐·격리 실행 조정기·시험용 클러스터 어댑터·전체 콘솔·데모 앱은 포함하지 않는다. Sova는 이 패키지를 사용하는 첫 통합 시험 환경이다. 팀 platform 연결과 일반 고객 환경의 운영 자격은 별도 검증 대상이다.
 
+## 구현·검증을 읽는 기준
+
+| 구분 | 이 저장소에서 확인하는 내용 | 확대해서 해석하면 안 되는 내용 |
+|---|---|---|
+| 공통 패키지 | `pyproject.toml` 기준 0.11.1, 정책·근거·보류·판정 계약 | 패키지 설치가 인증·배포·운영 승인 완료는 아니다. |
+| 선택형 서비스 | 직접 ASGI 애플리케이션과 Uvicorn, `POST /v1/program-reviews` | FastAPI 기반 전체 플랫폼 API나 클라우드 실행 서비스가 아니다. |
+| 서비스 이미지 검사 | 특정 source·아키텍처·scanner DB에 결속된 과거 결과 | 과거 0건을 현재 모든 이미지의 무취약점 선언으로 쓰지 않는다. |
+| 지속 시험 | 문서에 기록된 코드·시간·프로세스·컨테이너 경계 | 90분 시험의 producer와 최종 코드 producer는 별도다. |
+| 플랫폼 인수 | 고정 platform 계약의 소비 시험과 남은 연결 조건 | 일반 고객 환경·팀 실제 운영의 인증/권한/네트워크/복구 완료가 아니다. |
+
+검증한 서비스 이미지와 Sova 전용 대응 앱 이미지는 다른 산출물이다. Sova의 대응 실행기나 레지스트리 스캔 결과를 이 서비스 이미지의 검사 결과와 합치지 않는다. Patching as a Service는 [원문 추적과 구현 범위](docs/architecture-integration.md)를 따르며, 실제 AI·Harbor·배포·복구는 호스트 인수 항목이다. [2026-11-13 문서 점검](docs/documentation-review-2026-11-13.md)
+
 ## 설치
 
 Python 3.11 이상을 사용한다. 기본 설치에는 클라우드 SDK나 DB 연결이 필요 없다.
@@ -49,8 +62,9 @@ PostgreSQL 어댑터는 `postgres`, 서명은 `signing`, AWS 시험·사용은 `
 Sova에서 로컬 개발 연결:
 
 ```sh
-cd /path/to/sova
-.local-notes/venv/bin/python -m pip install -e '../team-bravo/security[postgres,signing,aws]'
+# security/와 sova-test/가 같은 상위 폴더에 있는 배치
+cd /path/to/sova-test
+.local-notes/venv/bin/python -m pip install -e '../security[postgres,signing,aws]'
 ```
 
 릴리스 소비 환경은 검증한 wheel과 해시를 고정한다. [CI 산출물 소비 방법](docs/distribution.md)을 따른다. 0.11.0은 0.10.0의 두 문서 통합 계약에 선택형 서비스를 추가하며 PyPI 배포를 뜻하지 않는다.
@@ -60,7 +74,7 @@ cd /path/to/sova
 0.11.1은 최신 T33 normalizer v2의 명시적 계약 선택, 인증 뒤 현재 권한 재검사와
 T14·T33 오프라인 인수 목록을 추가한다. 인수 목록의 schema 소비에는 `team` extra가 필요하다.
 
-두 문서의 원문·요구사항 추적·구현 경계는 [보안 설계 통합](docs/architecture-integration.md), 실제 `platform` 연결 순서는 Sova의 [인계 문서](../sova-test/docs/platform-security-handoff.md)를 참고한다. 카탈로그에 검사가 있다는 사실은 해당 환경의 통과 근거가 아니다.
+두 문서의 원문·요구사항 추적·구현 경계는 [보안 설계 통합](docs/architecture-integration.md), 실제 `platform` 연결 순서는 Sova의 [인계 문서](https://github.com/Softbank-Hackathon-Finals/sova-test/blob/main/docs/platform-security-handoff.md)를 참고한다. 카탈로그에 검사가 있다는 사실은 해당 환경의 통과 근거가 아니다.
 
 현재 저장소·서명 증거·실행기를 연결하는 코드는 [생산자 연결과 호스트 조합](docs/program-evidence-integration.md)에 있다. 기존 팀 ControlRun과 강화된 2026-11-06 schema snapshot을 명시적으로 선택할 수 있다.
 

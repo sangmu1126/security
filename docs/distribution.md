@@ -55,9 +55,11 @@ uv sync --locked --extra dev --no-install-project --no-build --python 3.12
 uv 0.13.6과 검토한 `uv.lock`을 사용한다. Windows에서는 `.venv/Scripts/python.exe`를 사용한다.
 로컬 산출물과 CI 산출물은 별개로 식별하고 해시를 기록한다. 서로 다른 빌드 환경에서 wheel 바이트가 항상 같다고 가정하지 않는다.
 
-현재 개인 검증 브랜치의 wheel은 이 방식으로 정확한 commit에서 만들거나 해당 `service-image` artifact의
-`dist/`와 source/lock/wheel manifest를 함께 검증해 사용한다. main의 이전 동명 0.11.0을 최신 브랜치
-구현으로 간주하지 않는다. Sova는 `integration/security/manifest.json`의 전체 producer SHA를 별도로 고정한다.
+wheel은 이 방식으로 정확한 commit에서 만들거나 해당 `service-image` artifact의
+`dist/`와 source/lock/wheel manifest를 함께 검증해 사용한다. 과거 0.11.0 인계에서 사용한
+main/개인 브랜치의 구분을 현재 버전 상태로 읽지 않는다. 이 문서 점검 기준의 `pyproject.toml`은
+0.11.1이며, 버전 문자열이 같아도 source가 같다는 뜻은 아니다. Sova는
+`integration/security/manifest.json`의 전체 producer SHA를 별도로 고정한다.
 
 ## 보증의 범위
 
